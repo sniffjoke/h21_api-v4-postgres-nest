@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { DataSource, Like, Or, Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Like, Or, Repository } from 'typeorm';
 import { PaginationBaseModel } from '../../../core/base/pagination.base.model';
 import { UserEntity } from '../domain/user.entity';
 

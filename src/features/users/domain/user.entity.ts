@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, PrimaryGeneratedColumn, TreeChildren } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { EmailConfirmationModel } from '../api/models/input/create-user.dto';
 // Entity
 class EmailConfirmationDto {
