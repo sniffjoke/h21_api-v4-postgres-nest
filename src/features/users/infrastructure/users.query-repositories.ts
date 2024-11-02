@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Like, Or, Repository } from 'typeorm';
+import { ILike, Like, Or, Repository } from 'typeorm';
 import { PaginationBaseModel } from '../../../core/base/pagination.base.model';
 import { UserEntity } from '../domain/user.entity';
 
@@ -14,7 +14,7 @@ export class UsersQueryRepository {
 
   async userOutput(id: string) {
     const findedUser = await this.uRepository.findOne(
-      {where: {id}}
+      { where: { id } },
       // 'SELECT * FROM users WHERE id = $1', [id]
     );
     if (!findedUser) {
@@ -38,8 +38,8 @@ export class UsersQueryRepository {
     const items = await this.uRepository
       .find({
         where: [
-          { email: Or(Like(`${generateQuery.searchEmailTerm}`)) },
-          { login: Or(Like(`${generateQuery.searchLoginTerm}`)) },
+          { email: Or(ILike(`${generateQuery.searchEmailTerm}`)) },
+          { login: Or(ILike(`${generateQuery.searchLoginTerm}`)) },
         ],
         order: {
           [generateQuery.sortBy]: generateQuery.sortDirection,
@@ -70,10 +70,12 @@ export class UsersQueryRepository {
     const searchLoginTerm = query.searchLoginTerm ? query.searchLoginTerm : '';
     const searchEmailTerm = query.searchEmailTerm ? query.searchEmailTerm : '';
     const totalCount = await this.uRepository.count(
-      {where: [
-          { email: Or(Like(`%${searchEmailTerm}%`)) },
-          { login: Or(Like(`%${searchLoginTerm}%`)) },
-        ],}
+      {
+        where: [
+          { email: Or(ILike(`%${searchEmailTerm}%`)) },
+          { login: Or(ILike(`%${searchLoginTerm}%`)) },
+        ],
+      },
     );
     // const totalCount = await this.dataSource.query(
     //   `
