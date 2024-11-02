@@ -18,6 +18,8 @@ export class UsersService {
   ) {
   }
 
+  // Доменное событие
+
   async createUser(createUserDto: CreateUserDto, isConfirm: boolean): Promise<string> {
     const isUserExists = await this.usersRepository.checkIsUserExists(createUserDto.login, createUserDto.email)
     const emailConfirmation: EmailConfirmationModel = this.createEmailConfirmation(isConfirm);
@@ -31,7 +33,7 @@ export class UsersService {
     return saveData.id;
   }
 
-  private createEmailConfirmation(isConfirm: boolean) {
+  public createEmailConfirmation(isConfirm: boolean) {
     const emailConfirmationNotConfirm: EmailConfirmationModel = {
       isConfirm: false,
       confirmationCode: this.uuidService.generate(),
@@ -47,7 +49,7 @@ export class UsersService {
     return isConfirm ? emailConfirmationIsConfirm : emailConfirmationNotConfirm;
   }
 
-  private async sendActivationEmail(to: string, link: string) {
+  public async sendActivationEmail(to: string, link: string) {
     await this.mailService.sendMail({
       from: process.env.SMTP_USER,
       to,

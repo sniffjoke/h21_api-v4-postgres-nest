@@ -38,8 +38,8 @@ export class UsersQueryRepository {
     const items = await this.uRepository
       .find({
         where: [
-          { email: Like(`%${generateQuery.searchEmailTerm}%`) },
-          { login: Like(`%${generateQuery.searchLoginTerm}%`) },
+          { email: Or(Like(`${generateQuery.searchEmailTerm}`)) },
+          { login: Or(Like(`${generateQuery.searchLoginTerm}`)) },
         ],
         order: {
           [generateQuery.sortBy]: generateQuery.sortDirection,
