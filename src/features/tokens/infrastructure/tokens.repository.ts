@@ -24,7 +24,7 @@ export class TokensRepository {
   }
 
   async findTokenByRToken(filter: any) {
-    const findedToken = await this.tRepository.find(
+    const findedToken = await this.tRepository.findOne(
       {where: {refreshToken: filter.refreshToken}}
       // 'SELECT * FROM tokens WHERE "refreshToken" = $1',
       // [filter.refreshToken],

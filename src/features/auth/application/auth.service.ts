@@ -85,7 +85,7 @@ export class AuthService {
     };
   }
 
-  async refreshToken(tokenHeaderR: any) {
+  async   refreshToken(tokenHeaderR: any) {
     const token = this.tokensService.getTokenFromCookie(tokenHeaderR);
     const tokenValidate: any = this.tokensService.validateRefreshToken(token);
     if (!tokenValidate) {
@@ -99,6 +99,7 @@ export class AuthService {
     if (!updateTokenInfo) {
       throw new UnauthorizedException('Something went wrong');
     }
+    console.log(isTokenExists);
     const { refreshToken, accessToken } = this.tokensService.createTokens(isTokenExists.userId, tokenValidate.deviceId);
     const tokenData = {
       userId: isTokenExists.userId,
@@ -107,7 +108,7 @@ export class AuthService {
       deviceId: isTokenExists.deviceId,
     };
     const addTokenToDb = await this.tokensRepository.createToken(tokenData);
-    if (!addTokenToDb.length) {
+    if (!addTokenToDb) {
       throw new UnauthorizedException('Unfortunate to refresh token');
     }
     const findSessionAndUpdate = await this.devicesRepository.updateDeviceByIdAndByDeviceId(
