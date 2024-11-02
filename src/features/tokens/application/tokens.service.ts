@@ -17,7 +17,7 @@ export class TokensService {
         },
         {
           secret: SETTINGS.VARIABLES.JWT_SECRET_ACCESS_TOKEN,
-          expiresIn: "1000s"
+          expiresIn: "10s"
         }
       ),
       this.jwtService.sign(
@@ -27,7 +27,7 @@ export class TokensService {
         },
         {
           secret: SETTINGS.VARIABLES.JWT_SECRET_REFRESH_TOKEN,
-          expiresIn: "2000s"
+          expiresIn: "20s"
         }
       )
     ];

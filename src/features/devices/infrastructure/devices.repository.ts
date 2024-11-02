@@ -31,9 +31,9 @@ export class DevicesRepository {
       // 'SELECT * FROM devices WHERE "userId" = $1 AND "ip" = $2 AND "title" = $3',
       // [filter.userId, filter.ip, filter.title],
     );
-    if (!findedDevice) {
-      throw new NotFoundException('Device not found');
-    }
+    // if (!findedDevice) {
+    //   throw new NotFoundException('Device not found');
+    // }
     return findedDevice;
   }
 
