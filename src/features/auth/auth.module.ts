@@ -3,7 +3,6 @@ import { AuthController } from "./api/auth.controller";
 import { AuthService } from "./application/auth.service";
 import { UsersModule } from "../users/users.module";
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserEntity } from '../users/domain/user.entity';
 import { TokensModule } from '../tokens/tokens.module';
 import { DevicesModule } from '../devices/devices.module';
 
@@ -12,7 +11,7 @@ import { DevicesModule } from '../devices/devices.module';
     DevicesModule,
     TokensModule,
     UsersModule,
-    TypeOrmModule.forFeature([UserEntity]),
+    TypeOrmModule.forFeature([]),
   ],
   controllers: [AuthController],
   providers: [

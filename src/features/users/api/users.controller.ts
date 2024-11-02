@@ -7,9 +7,7 @@ import {
   Delete,
   UseGuards,
   HttpCode,
-  Query,
-  ValidationPipe,
-  UsePipes,
+  Query
 } from '@nestjs/common';
 import { UsersService } from '../application/users.service';
 import { CreateUserDto } from './models/input/create-user.dto';
@@ -35,16 +33,10 @@ export class UsersController {
   @Get('users')
   @UseGuards(BasicAuthGuard)
   async findAll(@Query() query: any) {
-    // const users = await this.usersService.findAll();
-    const users = await this.usersQueryRepository.getAllUsersWithQuery(query)
-    // return users.items.map(user => this.usersQueryRepository.userMap(user))
-    return users
+    const usersWithQuery = await this.usersQueryRepository.getAllUsersWithQuery(query)
+    return usersWithQuery
   }
 
-  // @Get(':id')
-  // findOne(@Param('id') id: string) {
-  //   return this.usersService.(+id);
-  // }
 
 
   @Delete('users/:id')

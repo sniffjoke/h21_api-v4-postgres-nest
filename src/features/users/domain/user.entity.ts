@@ -3,7 +3,7 @@ import { EmailConfirmationModel } from '../api/models/input/create-user.dto';
 // Entity
 class EmailConfirmationDto {
   @Column()
-  isConfirmed: boolean;
+  isConfirm: boolean;
 
   @Column({nullable: true})
   confirmationCode: string

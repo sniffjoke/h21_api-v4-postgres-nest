@@ -1,6 +1,5 @@
 import { IsEmail, IsString, Length } from 'class-validator';
 import { Trim } from '../../../../../core/decorators/transform/trim';
-import { UserExists } from '../../../../../core/decorators/async/user-is-exist.decorator';
 
 export class CreateUserDto {
   @Trim()
@@ -21,5 +20,5 @@ export class CreateUserDto {
 export class EmailConfirmationModel {
   confirmationCode?: string;
   expirationDate?: string;
-  isConfirmed: boolean;
+  isConfirm: boolean;
 }

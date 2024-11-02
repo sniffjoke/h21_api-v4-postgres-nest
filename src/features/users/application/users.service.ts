@@ -1,8 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { CreateUserDto, EmailConfirmationModel } from '../api/models/input/create-user.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { UserEntity } from '../domain/user.entity';
-import { Repository } from 'typeorm';
 import { SETTINGS } from '../../../core/settings/settings';
 import { UsersRepository } from '../infrastructure/users.repository';
 import { MailerService } from '@nestjs-modules/mailer';
@@ -22,29 +19,30 @@ export class UsersService {
   }
 
   async createUser(createUserDto: CreateUserDto, isConfirm: boolean): Promise<string> {
-    const isUserExists = await this.usersRepository.checkUserExistsByLogin(createUserDto.login, createUserDto.email)
+    const isUserExists = await this.usersRepository.checkIsUserExists(createUserDto.login, createUserDto.email)
     const emailConfirmation: EmailConfirmationModel = this.createEmailConfirmation(isConfirm);
     if (!isConfirm) {
       await this.sendActivationEmail(createUserDto.email, `${SETTINGS.PATH.API_URL}/?code=${emailConfirmation.confirmationCode as string}`);
     }
     const hashPassword = await this.cryptoService.hashPassword(createUserDto.password);
-    const newUserData = { ...createUserDto, password: hashPassword, emailConfirmation };
+    const newUserData = { ...createUserDto, emailConfirmation: {...emailConfirmation}, password: hashPassword };
+    console.log(emailConfirmation);
     const saveData = await this.usersRepository.createUser(newUserData);
     return saveData.id;
   }
 
   private createEmailConfirmation(isConfirm: boolean) {
     const emailConfirmationNotConfirm: EmailConfirmationModel = {
-      isConfirmed: false,
+      isConfirm: false,
       confirmationCode: this.uuidService.generate(),
       expirationDate: add(new Date(), {
           hours: 1,
           minutes: 30,
         },
-      ).toString(),
+      ).toISOString(),
     };
     const emailConfirmationIsConfirm: EmailConfirmationModel = {
-      isConfirmed: true,
+      isConfirm: true,
     };
     return isConfirm ? emailConfirmationIsConfirm : emailConfirmationNotConfirm;
   }
@@ -56,43 +54,37 @@ export class UsersService {
       subject: 'Активация аккаунта на ' + SETTINGS.PATH.API_URL,
       text: '',
       html:
-        `
-                <h1>Thank for your registration</h1>
-                <p>To finish registration please follow the link below:
-                    <a href='${link}'>Завершить регистрацию</a>
-                </p>
-
-            `,
+             `
+                 <h1>Thank for your registration</h1>
+                 <p>To finish registration please follow the link below:
+                     <a href='${link}'>Завершить регистрацию</a>
+                 </p>
+  
+             `,
     });
   }
 
   async resendEmail(email: string) {
     const isUserExists = await this.usersRepository.findUserByEmail(email);
-    if (isUserExists.emailConfirmation.isConfirmed) {
-      throw new BadRequestException('User already activate')
+    if (isUserExists.emailConfirmation.isConfirm) {
+      throw new BadRequestException('Email already activate')
     }
     const emailConfirmation: EmailConfirmationModel = this.createEmailConfirmation(false);
     await this.sendActivationEmail(email, `${SETTINGS.PATH.API_URL}/?code=${emailConfirmation.confirmationCode as string}`);
     const updateUserInfo = await this.usersRepository.updateUserByResendEmail(
-      isUserExists,
-      {
-        emailConfirmation,
-      },
+      isUserExists.id,
+      emailConfirmation
     );
     return updateUserInfo;
   }
 
   async activateEmail(code: string) {
     const isUserExists = await this.usersRepository.findUserByCode(code);
-    if (isUserExists.emailConfirmation.isConfirmed) {
-      throw new BadRequestException('User already activate')
+    if (isUserExists.emailConfirmation.isConfirm) {
+      throw new BadRequestException('Code already activate')
     }
-    const emailConfirmation: EmailConfirmationModel = this.createEmailConfirmation(false);
-    const updateUserInfo = await this.usersRepository.updateUserByResendEmail(
-      isUserExists,
-      {
-        emailConfirmation,
-      },
+    const updateUserInfo = await this.usersRepository.updateUserByActivateEmail(
+      isUserExists.id
     );
     return updateUserInfo;
   }
@@ -101,13 +93,5 @@ export class UsersService {
     const deleteUser = await this.usersRepository.deleteUserById(id);
     return deleteUser;
   }
-
-  // async findAll() {
-  //   return await this.usersRepository.getAllUsers();
-  // }
-
-  // async findOne(id: string) {
-  //   return await this.userRepository.findOneBy({ id });
-  // }
 
 }

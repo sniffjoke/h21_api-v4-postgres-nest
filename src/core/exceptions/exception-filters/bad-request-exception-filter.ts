@@ -1,5 +1,5 @@
 import { ArgumentsHost, BadRequestException, Catch, ExceptionFilter } from '@nestjs/common';
-import { Response } from 'express';
+import { request, Response } from 'express';
 
 
 @Catch()
@@ -13,13 +13,19 @@ export class BadRequestExceptionFilter implements ExceptionFilter {
     const errorsResponse: any = {
       errorsMessages: [],
     };
-    // console.log(responseBody);
     if (Array.isArray(responseBody.message)) { // Bad Request
       responseBody.message.forEach((msg) => {
           errorsResponse.errorsMessages.push(msg);
         },
       );
       response.status(status).send(errorsResponse);
+    } else if (responseBody.statusCode === 400 && !Array.isArray(responseBody.message)) {
+      // console.log(responseBody.message.split(' ')[0].toLowerCase());
+      // errorsResponse.errorsMessages.push({ message: responseBody.message, field: Object.keys(request.body ? request.body : {})[0] });
+      errorsResponse.errorsMessages.push({
+        message: responseBody.message,
+        field: responseBody.message.split(' ')[0].toLowerCase().toString() });
+      response.status(status).send(errorsResponse)
     } else {
       // errorsResponse.errorsMessages.push({ message: responseBody.message, field: "id" });
       // errorsResponse.errorsMessages.push(responseBody);

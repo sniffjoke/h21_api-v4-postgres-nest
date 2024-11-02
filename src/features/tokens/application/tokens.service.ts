@@ -17,7 +17,7 @@ export class TokensService {
         },
         {
           secret: SETTINGS.VARIABLES.JWT_SECRET_ACCESS_TOKEN,
-          expiresIn: "10s"
+          expiresIn: "1000s"
         }
       ),
       this.jwtService.sign(
@@ -27,7 +27,7 @@ export class TokensService {
         },
         {
           secret: SETTINGS.VARIABLES.JWT_SECRET_REFRESH_TOKEN,
-          expiresIn: "20s"
+          expiresIn: "2000s"
         }
       )
     ];
@@ -73,25 +73,5 @@ export class TokensService {
   decodeToken(token: string) {
     return this.jwtService.decode(token);
   }
-
-  // async findToken(filter: any) {
-  //   const findedToken = await this.tokensModel.findOne(filter)
-  //   return findedToken
-  // }
-  //
-  // async updateManyTokensInDb(filter: any, payload: any) {
-  //   const updateTokens = await this.tokensModel.updateMany(filter, payload)
-  //   return updateTokens
-  // }
-  //
-  // async updateOneTokenInDb(filter: any, payload: any) {
-  //   const updateTokens = await this.tokensModel.updateOne(filter, payload)
-  //   return updateTokens
-  // }
-  //
-  // async saveToken(tokenData: any) {
-  //   const saveToken = await this.tokensModel.create(tokenData)
-  //   return saveToken
-  // }
 
 }
