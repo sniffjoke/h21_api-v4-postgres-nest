@@ -6,7 +6,7 @@ import {
   LoginDto,
   ResendActivateCodeDto,
 } from './models/input/auth.input.model';
-// import { ThrottlerGuard } from '@nestjs/throttler';
+import { ThrottlerGuard } from '@nestjs/throttler';
 import { UserAgent } from '../../../core/decorators/common/user-agent.decorator';
 import ip from 'ip'
 import { CreateUserDto } from '../../users/api/models/input/create-user.dto';
@@ -33,7 +33,7 @@ export class AuthController {
 
   @Post('login')
   @HttpCode(200)
-  // @UseGuards(ThrottlerGuard)
+  @UseGuards(ThrottlerGuard)
   async login(
     @Body() loginDto: LoginDto,
     @Res({ passthrough: true }) response: Response,
@@ -52,7 +52,7 @@ export class AuthController {
 
   @Post('registration')
   @HttpCode(204)
-  // @UseGuards(ThrottlerGuard)
+  @UseGuards(ThrottlerGuard)
   async register(@Body() createUserDto: CreateUserDto) {
     const userId = await this.usersService.createUser(createUserDto, false);
     const newUser = await this.usersQueryRepository.userOutput(userId);
@@ -83,7 +83,7 @@ export class AuthController {
 
   @Post('registration-confirmation')
   @HttpCode(204)
-  // @UseGuards(ThrottlerGuard)
+  @UseGuards(ThrottlerGuard)
   async activateEmail(@Body() dto: EmailActivateDto) {
     const activateEmail = await this.usersService.activateEmail(dto.code);
     return activateEmail;
@@ -91,7 +91,7 @@ export class AuthController {
 
   @Post('registration-email-resending')
   @HttpCode(204)
-  // @UseGuards(ThrottlerGuard)
+  @UseGuards(ThrottlerGuard)
   async resendEmail(@Body() dto: ResendActivateCodeDto) {
     return await this.usersService.resendEmail(dto.email);
   }
