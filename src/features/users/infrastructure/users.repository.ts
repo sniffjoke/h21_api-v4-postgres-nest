@@ -46,7 +46,7 @@ export class UsersRepository {
       await this.uRepository.manager.save(findedUser);
       return findedUser.emailConfirmation;
     }
-    return null
+    return null;
     // const updateUserInfo = await this.uRepository.update(
     //   { id: userId },
     //   {
@@ -73,7 +73,7 @@ export class UsersRepository {
       await this.uRepository.manager.save(findedUser);
       return findedUser.emailConfirmation;
     }
-    return null
+    return null;
     // const updateUserInfo = await this.uRepository.update(
     //   { id: userId },
     //   {
@@ -141,14 +141,18 @@ export class UsersRepository {
   }
 
   async findUserByCode(code: string) {
-    const findedUser = await this.uRepository.findOne(
-      {
-        where: {
-          emailConfirmation: { confirmationCode: code },
-        },
+    const findedUsers = await this.uRepository.find({
+        relations: ['emailConfirmation'],
       },
+      // const findedUser = await this.uRepository.findOne(
+      //   {
+      //     where: {
+      //       emailConfirmation: { confirmationCode: code },
+      //     },
+      //   },
       // 'SELECT * FROM users WHERE "emailConfirmationConfirmationCode" = $1', [code]
     );
+    const findedUser = findedUsers.find((user) => user.emailConfirmation.confirmationCode === code);
     if (!findedUser) {
       throw new BadRequestException('Code not found');
     }
