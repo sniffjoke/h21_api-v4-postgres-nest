@@ -22,15 +22,14 @@ export class UsersService {
 
   async createUser(createUserDto: CreateUserDto, isConfirm: boolean): Promise<string> {
     const isUserExists = await this.usersRepository.checkIsUserExists(createUserDto.login, createUserDto.email)
-    const emailConfirmation: EmailConfirmationModel = this.createEmailConfirmation(isConfirm);
+    const emailConfirmationDto: EmailConfirmationModel = this.createEmailConfirmation(isConfirm);
     if (!isConfirm) {
-      await this.sendActivationEmail(createUserDto.email, `${SETTINGS.PATH.API_URL}/?code=${emailConfirmation.confirmationCode as string}`);
+      await this.sendActivationEmail(createUserDto.email, `${SETTINGS.PATH.API_URL}/?code=${emailConfirmationDto.confirmationCode as string}`);
     }
     const hashPassword = await this.cryptoService.hashPassword(createUserDto.password);
-    const newUserData = { ...createUserDto, emailConfirmation: {...emailConfirmation}, password: hashPassword };
-    console.log(emailConfirmation);
-    const saveData = await this.usersRepository.createUser(newUserData);
-    return saveData.id;
+    const newUserData = { ...createUserDto, password: hashPassword };
+    const userSave = await this.usersRepository.createUser(newUserData, emailConfirmationDto);
+    return userSave.id;
   }
 
   public createEmailConfirmation(isConfirm: boolean) {
@@ -68,6 +67,7 @@ export class UsersService {
 
   async resendEmail(email: string) {
     const isUserExists = await this.usersRepository.findUserByEmail(email);
+    // const checkIsUserExistsAndNotConfirm = await this.usersRepository.findUserByEmail(email);
     if (isUserExists.emailConfirmation.isConfirm) {
       throw new BadRequestException('Email already activate')
     }

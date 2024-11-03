@@ -1,22 +1,10 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { EmailConfirmationModel } from '../api/models/input/create-user.dto';
-// Entity
-class EmailConfirmationDto {
-  @Column()
-  isConfirm: boolean;
-
-  @Column({nullable: true})
-  confirmationCode: string
-
-  // Foreign
-
-  @Column({nullable: true})
-  expirationDate: string
-}
+import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { EmailConfirmationEntity } from './email-confirmation.entity';
 
 
 @Entity('users')
 export class UserEntity {
+
   @PrimaryGeneratedColumn()
   id: string;
 
@@ -33,7 +21,10 @@ export class UserEntity {
   createdAt: string
 
   // @One-to-One() JoinColumn
-  @Column(() => EmailConfirmationDto)
-  emailConfirmation: EmailConfirmationModel
+  // @Column(() => EmailConfirmationDto)
+  // emailConfirmation: EmailConfirmationModel
+  @OneToOne(() => EmailConfirmationEntity, (emailConfirmation) => emailConfirmation.user, {cascade: true})
+  @JoinColumn()
+  emailConfirmation: EmailConfirmationEntity
 
 }

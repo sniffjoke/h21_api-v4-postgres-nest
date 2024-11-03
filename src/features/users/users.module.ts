@@ -7,10 +7,11 @@ import { UuidModule } from 'nestjs-uuid';
 import { CryptoModule } from '../../core/modules/crypto/crypto.module';
 import { UsersQueryRepository } from './infrastructure/users.query-repositories';
 import { UserEntity } from './domain/user.entity';
+import { EmailConfirmationEntity } from './domain/email-confirmation.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([UserEntity]),
+    TypeOrmModule.forFeature([UserEntity, EmailConfirmationEntity]),
     CryptoModule,
     UuidModule,
   ],
